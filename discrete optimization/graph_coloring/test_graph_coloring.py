@@ -4,6 +4,11 @@ import pytest
 import requests
 from graph_coloring import *
 from dimacs_reader import DIMACSReader
+import csv
+
+with open("results.csv", "w") as file:
+    writer = csv.writer(file)
+    writer.writerow(["filename", "time", "num colors"])
 
 
 @pytest.mark.parametrize("filename, expected_time, max_colors", [
@@ -25,6 +30,9 @@ def test_coloring_algorithm(filename, expected_time, max_colors):
     start_time = time.time()
     colors_clusters = graph_coloring_min_available_color_algorithm(graph)
     end_time = time.time()
+    with open("results.csv", "a") as file:
+        writer = csv.writer(file)
+        writer.writerow([filename, f"{(end_time - start_time):.3f}", len(colors_clusters)])
 
     for color, vertices in colors_clusters.items():
         for vertex in vertices:
