@@ -1,13 +1,6 @@
+import random
+
 from tqdm import tqdm
-import itertools
-
-
-def get_all_subsets(s):
-    all_subsets = []
-    for length in range(1, len(s) + 1):
-        subs = itertools.combinations(s, length)
-        all_subsets += list(subs)
-    return all_subsets
 
 
 class AdjacencyList(dict):
@@ -43,44 +36,66 @@ class Graph:
         self.sorted_vertices = sorted(self.adjacency_list, key=lambda k: len(self.adjacency_list[k]), reverse=True)
         self.set_sorted_vertices = set(self.sorted_vertices)
 
-    def check_clique(self, clique):
-        for vertex in clique:
-            for neighbor in self.adjacency_list[vertex]:
-                if neighbor not in clique:
-                    return False
-        return True
+    def get_random_vertices(self, vertices: list, num: int = 3):
+        return random.choice(vertices[0:num])
 
-    """
-    # поделить отсортированный по степени вершин массив на сеты в словарь, где ключ - степень верштин, а в ссете индексы вершин
-    выбрать те сеты, где количество элементов больше или равно степени
-    в полученных множествах запустить проверку каждая с каждой, если какая-то из вершин указывает не на наше множество - удаляем
-    Делать пока или не пройдем все вершины в множестве и не подтвердим клику или количество элементов множества станет больше степени множества
-    """
-    def find_max_clique(self):
+    def greedy_find_max_clique(self):
         self.set_sorted_vertices_by_degree()
-
-        for vertex in self.sorted_vertices:
-            degree = self.get_vertex_degree(vertex)
-            self.same_degree_groups.update(degree, vertex)
-
         max_clique = set()
-        sorted_degrees = sorted(self.same_degree_groups, key=lambda k: k, reverse=True)
-
-        for degree in tqdm(sorted_degrees):
-            if degree <= len(max_clique):
-                break
-
-            group = set()
-            for d in sorted_degrees:
-                if d >= degree:
-                    group |= self.same_degree_groups[d]
-
-            for vertex in group:
-                adjacency_vertices = self.adjacency_list[vertex]
-                adjacency_vertices_subsets = get_all_subsets(adjacency_vertices)
-                for subset in adjacency_vertices_subsets:
-                    if group >= subset > len(max_clique) and self.check_clique(subset):
-                        max_clique = subset
-
+        for x in range(int(len(self.sorted_vertices)*2.5)):
+            for vertex in self.sorted_vertices:
+                potential_clique = {vertex}
+                sorted_neighbors = sorted(self.adjacency_list[vertex],
+                                          key=lambda k: len(self.adjacency_list[k]),
+                                          reverse=True)
+                clique_candidates = self.adjacency_list[vertex]
+                candidates_to_add = []
+                for neighbor in sorted_neighbors:
+                    if neighbor in clique_candidates:  # если этот сосед явялется соседом для всех кто в клике
+                        candidates_to_add.append(neighbor)
+                    if len(candidates_to_add) == 3:
+                        vertex_to_add = random.choice(candidates_to_add)
+                        potential_clique.add(vertex_to_add)
+                        clique_candidates = clique_candidates & self.adjacency_list[vertex_to_add]
+                        for c in candidates_to_add:
+                            if c != vertex_to_add and c in clique_candidates:
+                                potential_clique.add(c)
+                                clique_candidates = clique_candidates & self.adjacency_list[c]
+                        candidates_to_add = []
+                if len(potential_clique) > len(max_clique):
+                    max_clique = potential_clique
 
         return max_clique
+
+    # def greedy_find_max_clique(self):
+    #     self.set_sorted_vertices_by_degree()
+    #     self.max_clique = set()
+    #
+    #     def add_neighbor_to_clique(neighbor):
+    #         if all(neighbor in self.adjacency_list[v] for v in potential_clique):
+    #             potential_clique.append(neighbor)
+    #             if len(potential_clique) > len(self.max_clique):
+    #                 self.max_clique = set(potential_clique)
+    #             return neighbor
+    #         else:
+    #             return None
+    #
+    #     def step_deep(vertex):
+    #         next_vertex = None
+    #         sorted_neighbors = sorted(self.adjacency_list[vertex], key=lambda k: len(self.adjacency_list[k]),
+    #                                   reverse=True)
+    #         while not next_vertex and sorted_neighbors:
+    #             neighbor = random.choice(sorted_neighbors[0:3])
+    #             next_vertex = add_neighbor_to_clique(neighbor)
+    #             sorted_neighbors.remove(neighbor)
+    #         if next_vertex:
+    #             step_deep(vertex)
+    #         else:
+    #             return
+    #
+    #     for i, vertex in enumerate(self.sorted_vertices):
+    #         potential_clique = [vertex]
+    #         step_deep(vertex)
+    #
+    #     return self.max_clique
+

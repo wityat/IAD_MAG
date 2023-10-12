@@ -1,3 +1,4 @@
+import re
 from models import Graph
 
 
@@ -14,6 +15,7 @@ class DIMACSReader:
     def process(self, text):
         graph = Graph()
         for line in text.split("\n"):
+            line = re.sub(r"\s+", " ", line).strip()
             line_split = line.replace("\n", "").split(" ")
             if line.startswith("c"):
                 pass
