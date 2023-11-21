@@ -1,4 +1,6 @@
 import re
+import re
+
 from models import Graph
 
 
@@ -16,10 +18,12 @@ class DIMACSReader:
         graph = Graph()
         for line in text.split("\n"):
             line = re.sub(r"\s+", " ", line).strip()
-            line_split = line.replace("\n", "").split(" ")
+            line = re.sub(r'\s+', ' ', line)
+            line_split = line.strip().replace("\n", "").split(" ")
             if line.startswith("c"):
                 pass
             elif line.startswith("p edge"):
+                print(line, line_split)
                 graph.num_vertices = int(line_split[-2])
                 graph.num_edges = int(line_split[-1])
             elif line.startswith("e"):

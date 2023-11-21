@@ -3,11 +3,10 @@ import time
 import pytest
 from models import *
 from dimacs_reader import DIMACSReader
-import csv
 
-with open("results.csv", "w") as file:
-    writer = csv.writer(file)
-    writer.writerow(["filename", "time", "num vertices"])
+
+with open("results.csv", "w", newline='') as file:
+    file.write(f"Shatilov Viktor;time\n")
 
 
 @pytest.mark.parametrize("filename, max_time, min_or_exact_clique", [
@@ -43,14 +42,15 @@ def test_find_max_clique_algorithm(filename, max_time, min_or_exact_clique):
         graph = DIMACSReader().read(text=text)
 
     start_time = time.time()
-    max_clique = graph.greedy_find_max_clique()
+    max_clique = graph.find_max_clique()
     end_time = time.time()
 
     result = len(max_clique)
 
-    with open("results.csv", "a") as file:
-        writer = csv.writer(file)
-        writer.writerow([filename, f"{(end_time - start_time):.3f}", result])
+    with open("results.csv", "a", newline='') as file:
+        formatted_time = f"{(end_time - start_time):.3f}"
+        formatted_time_with_comma = formatted_time.replace('.', ',')
+        file.write(f"{result};{formatted_time_with_comma}\n")
 
     for vertex in max_clique:
         for neighbor in max_clique:

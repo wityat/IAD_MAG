@@ -6,7 +6,7 @@ from graph_coloring import *
 from dimacs_reader import DIMACSReader
 import csv
 
-with open("results.csv", "w") as file:
+with open("results.csv", "w", newline='') as file:
     writer = csv.writer(file)
     writer.writerow(["filename", "time", "num colors"])
 
