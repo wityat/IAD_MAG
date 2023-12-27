@@ -66,36 +66,3 @@ class Graph:
                     max_clique = potential_clique
 
         return max_clique
-
-    # def greedy_find_max_clique(self):
-    #     self.set_sorted_vertices_by_degree()
-    #     self.max_clique = set()
-    #
-    #     def add_neighbor_to_clique(neighbor):
-    #         if all(neighbor in self.adjacency_list[v] for v in potential_clique):
-    #             potential_clique.append(neighbor)
-    #             if len(potential_clique) > len(self.max_clique):
-    #                 self.max_clique = set(potential_clique)
-    #             return neighbor
-    #         else:
-    #             return None
-    #
-    #     def step_deep(vertex):
-    #         next_vertex = None
-    #         sorted_neighbors = sorted(self.adjacency_list[vertex], key=lambda k: len(self.adjacency_list[k]),
-    #                                   reverse=True)
-    #         while not next_vertex and sorted_neighbors:
-    #             neighbor = random.choice(sorted_neighbors[0:3])
-    #             next_vertex = add_neighbor_to_clique(neighbor)
-    #             sorted_neighbors.remove(neighbor)
-    #         if next_vertex:
-    #             step_deep(vertex)
-    #         else:
-    #             return
-    #
-    #     for i, vertex in enumerate(self.sorted_vertices):
-    #         potential_clique = [vertex]
-    #         step_deep(vertex)
-    #
-    #     return self.max_clique
-

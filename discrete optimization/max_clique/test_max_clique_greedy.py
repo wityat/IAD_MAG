@@ -42,7 +42,7 @@ def test_find_max_clique_algorithm(filename, max_time, min_or_exact_clique):
         graph = DIMACSReader().read(text=text)
 
     start_time = time.time()
-    max_clique = graph.find_max_clique()
+    max_clique = graph.greedy_find_max_clique()
     end_time = time.time()
 
     result = len(max_clique)
